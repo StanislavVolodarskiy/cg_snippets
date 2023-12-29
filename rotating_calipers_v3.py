@@ -57,7 +57,7 @@ def get_angles(points_indexes): #находим минимальный угол 
     calipers = [bottom_caliper, right_caliper, top_caliper, left_caliper]
     
     new_points = [(calipers[i][0] - points[points_indexes[i]][0], calipers[i][1] - points[points_indexes[i]][1], 
-                   points_indexes[i]) for i in range(4)]
+                   i) for i in range(4)]
 
     areas = []
     for i in range(4):
@@ -78,26 +78,26 @@ def get_angles(points_indexes): #находим минимальный угол 
 
 def change_indexes(points_indexes, index_to_change): #пересчет индексов
     new_points_indexes = points_indexes.copy()
-    new_points_indexes[new_points_indexes.index(index_to_change)] = (index_to_change + 1) % len(points)
+    new_points_indexes[index_to_change] = (new_points_indexes[index_to_change] + 1) % len(points)
     return new_points_indexes
 
 
-def rectangle_area(points_indexes):
+def rectangle_area(points_indexes, index_to_change):
+    points_indexes = points_indexes[index_to_change:] + points_indexes[:index_to_change]
+
     norm = np.linalg.norm
 
-    p1 = np.array(points[(points_indexes[0] - 1) % len(points)])
-    p2 = np.array(points[points_indexes[0]])
-    p3 = np.array(points[points_indexes[2]])
+    p_bottom = np.array(points[points_indexes[0]])
+    p_right = np.array(points[points_indexes[1]])
+    p_top = np.array(points[points_indexes[2]])
+    p_left = np.array(points[points_indexes[3]])
+    h_dir = np.array(points[(points_indexes[0] + 1) % len(points)]) - p_bottom
 
-    d1 = norm(np.cross(p2 - p1, p1 - p3)) / norm(p2 - p1)
+    height = norm(np.cross(p_top - p_bottom, h_dir)) / norm(h_dir)
 
-    p1 = np.array(points[(points_indexes[1] - 1) % len(points)])
-    p2 = np.array(points[points_indexes[1]])
-    p3 = np.array(points[points_indexes[3]])
+    width = np.dot(p_right - p_left, h_dir) / norm(h_dir)
 
-    d2 = norm(np.cross(p2 - p1, p1 - p3)) / norm(p2 - p1)
-
-    rect_area = d1 * d1
+    rect_area = width * height
 
     return rect_area
     
@@ -107,16 +107,15 @@ def find_min_area(points):
     bottom_p, right_p, top_p, left_p = find_extr(points)
     start_points_indexes = [points.index(bottom_p), points.index(right_p), points.index(top_p), points.index(left_p)]
     all_areas = []
-    all_areas.append(rectangle_area(start_points_indexes))
     index_to_change = get_angles(start_points_indexes)
+    all_areas.append(rectangle_area(start_points_indexes, index_to_change))
     points_indexes = change_indexes(start_points_indexes, index_to_change)  
     
     for i in range(len(points)-1):
-        if points_indexes != start_points_indexes and len(points_indexes) == len(set(points_indexes)):
-            area = rectangle_area(points_indexes)
-            all_areas.append(area)
-            index_to_change = get_angles(points_indexes)
-            points_indexes = change_indexes(points_indexes, index_to_change)
+        index_to_change = get_angles(points_indexes)
+        area = rectangle_area(points_indexes, index_to_change)
+        all_areas.append(area)
+        points_indexes = change_indexes(points_indexes, index_to_change)
             
         i+=1
     min_area = min(all_areas)
