@@ -76,12 +76,11 @@ def get_angles(points, indices): #находим минимальный угол
         for rot, index in zip(rots, indices)
     ]
 
-    return min(enumerate(calipers), key=functools.cmp_to_key(cmp_))[0]
+    i = min(enumerate(calipers), key=functools.cmp_to_key(cmp_))[0]
+    return indices[i:] + indices[:i]
 
 
-def rectangle_area(points, indices, index_to_change):
-    indices = indices[index_to_change:] + indices[:index_to_change]
-
+def rectangle_area(points, indices):
     p_bottom = points[indices[0]]
     p_right = points[indices[1]]
     p_top = points[indices[2]]
@@ -98,14 +97,13 @@ def rectangle_area(points, indices, index_to_change):
 
 
 def find_min_area(points):
-    indices = find_extr(points)
 
-    def areas():
+    def areas(indices):
         for _ in range(len(points)):
-            index_to_change = get_angles(points, indices)
-            area = rectangle_area(points, indices, index_to_change)
+            indices = get_angles(points, indices)
+            area = rectangle_area(points, indices)
             yield area
-            indices[index_to_change] = (indices[index_to_change] + 1) % len(points)
+            indices[0] = (indices[0] + 1) % len(points)
 
     def cmp_(a, b):
         na, da = a
@@ -117,7 +115,8 @@ def find_min_area(points):
             return 1
         return 0
 
-    min_area = min(areas(), key=functools.cmp_to_key(cmp_))
+    indices = find_extr(points)
+    min_area = min(areas(indices), key=functools.cmp_to_key(cmp_))
     return min_area
 
 
