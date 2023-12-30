@@ -26,11 +26,7 @@ rots = rot0, rot270, rot180, rot90
 
 
 def extremal_index(points, rot):
-    extremum = min(
-        ((p, i) for i, p in enumerate(points)),
-        key=lambda r: rot(r[0])
-    )
-    return extremum[-1]
+    return min(enumerate(points), key=lambda r: rot(r[1]))[0]
 
 
 def find_extr(points):
