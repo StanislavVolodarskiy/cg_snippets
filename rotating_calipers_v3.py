@@ -1,4 +1,3 @@
-import ast
 import functools
 import sys
 
@@ -123,7 +122,7 @@ def find_min_area(points):
 
 
 def main():
-    points = [ast.literal_eval(line) for line in sys.stdin]
+    points = [tuple(map(int, line.split())) for line in sys.stdin]
     print(*find_min_area(points))
 
 
