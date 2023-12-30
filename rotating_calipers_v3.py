@@ -64,12 +64,6 @@ def get_angles(points, points_indexes): #находим минимальный �
             min_caliper = new_points[j]
     
     return min_caliper[2]
-    
-
-def change_indexes(points, points_indexes, index_to_change): #пересчет индексов
-    new_points_indexes = points_indexes.copy()
-    new_points_indexes[index_to_change] = (new_points_indexes[index_to_change] + 1) % len(points)
-    return new_points_indexes
 
 
 def rectangle_area(points, points_indexes, index_to_change):
@@ -90,24 +84,19 @@ def rectangle_area(points, points_indexes, index_to_change):
     rect_area = width * height
 
     return rect_area
-    
+
 
 def find_min_area(points):
+    points_indexes = find_extr(points)
 
-    start_points_indexes = find_extr(points)
-    all_areas = []
-    index_to_change = get_angles(points, start_points_indexes)
-    all_areas.append(rectangle_area(points, start_points_indexes, index_to_change))
-    points_indexes = change_indexes(points, start_points_indexes, index_to_change)  
-    
-    for i in range(len(points)-1):
-        index_to_change = get_angles(points, points_indexes)
-        area = rectangle_area(points, points_indexes, index_to_change)
-        all_areas.append(area)
-        points_indexes = change_indexes(points, points_indexes, index_to_change)
-            
-        i+=1
-    min_area = min(all_areas)
+    def areas():
+        for _ in range(len(points)):
+            index_to_change = get_angles(points, points_indexes)
+            area = rectangle_area(points, points_indexes, index_to_change)
+            yield area
+            points_indexes[index_to_change] = (points_indexes[index_to_change] + 1) % len(points)
+
+    min_area = min(areas())
     return min_area
 
 
