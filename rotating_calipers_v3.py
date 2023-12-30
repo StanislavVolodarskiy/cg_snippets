@@ -46,25 +46,6 @@ def edge(points, index):
     return x2 - x1, y2 - y1
 
 
-def rot0(v):
-    return v
-
-
-def rot90(v):
-    x, y = v
-    return -y, x
-
-
-def rot180(v):
-    x, y = v
-    return -x, -y
-
-
-def rot270(v):
-    x, y = v
-    return y, -x
-
-
 def get_angles(points, points_indexes): #находим минимальный угол и получаем индекс, который необходимо изменить
 
     calipers = [
