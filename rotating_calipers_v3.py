@@ -1,5 +1,4 @@
 import ast
-import math
 import numpy as np
 
 
@@ -36,23 +35,32 @@ def edge(points, index):
     return x2 - x1, y2 - y1
 
 
-def rotate_caliper(edge, angle):
-    x, y = edge
+def rot0(v):
+    return v
 
-    new_x = x * math.cos(angle) - y * math.sin(angle)
-    new_y = x * math.sin(angle) + y * math.cos(angle)
 
-    return (new_x, new_y)
+def rot90(v):
+    x, y = v
+    return -y, x
+
+
+def rot180(v):
+    x, y = v
+    return -x, -y
+
+
+def rot270(v):
+    x, y = v
+    return y, -x
 
 
 def get_angles(points, points_indexes): #находим минимальный угол и получаем индекс, который необходимо изменить
 
-    bottom_caliper = rotate_caliper(edge(points, points_indexes[0]), 0)
-    right_caliper = rotate_caliper(edge(points, points_indexes[1]), 3/2*math.pi)
-    top_caliper = rotate_caliper(edge(points, points_indexes[2]), math.pi)
-    left_caliper = rotate_caliper(edge(points, points_indexes[3]), math.pi/2)
-
-    calipers = [bottom_caliper, right_caliper, top_caliper, left_caliper]
+    rots = rot0, rot270, rot180, rot90
+    calipers = [
+        rot(edge(points, index))
+        for rot, index in zip(rots, points_indexes)
+    ]
     
     new_points = [(calipers[i][0], calipers[i][1], i) for i in range(4)]
 
