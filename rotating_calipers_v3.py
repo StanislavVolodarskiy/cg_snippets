@@ -56,10 +56,15 @@ def get_angles(points, indices): #находим минимальный угол
 
     new_points = [(calipers[i][0], calipers[i][1], i) for i in range(4)]
 
-    def less(c1, c2):
-        return triangle_area(c1[:2], c2[:2]) < 0
+    def cmp_(c1, c2):
+        a = triangle_area(c1[:2], c2[:2])
+        if a < 0:
+            return -1
+        if a > 0:
+            return 1
+        return 0
 
-    return max(new_points, key=functools.cmp_to_key(less))[2]
+    return min(new_points, key=functools.cmp_to_key(cmp_))[2]
 
 
 def rectangle_area(points, indices, index_to_change):
