@@ -2,24 +2,20 @@ import ast
 import numpy as np
 
 
-def find_extr(points):
-    bottom_min = min([ point[1] for point in points])
-    points_filter = [point for point in points if point[1]==bottom_min]
-    bottom_p = sorted(points_filter, key = lambda x: x[0], reverse=True)[0]
-    
-    right_max = max([point[0] for point in points])
-    points_filter = [point for point in points if point[0]==right_max]
-    right_p = sorted(points_filter, key = lambda x: x[1], reverse = True)[0]
-    
-    top_max = max([point[1] for point in points])
-    points_filter = [point for point in points if point[1]==top_max]
-    top_p = sorted(points_filter, key = lambda x: x[0])[0]
-    
-    left_min = min([ point[0] for point in points])
-    points_filter = [point for point in points if point[0]==left_min]
-    left_p = sorted(points_filter, key = lambda x: x[1])[0]
+def extremal_index(points, rot):
+    extremum = min(
+        ((p, i) for i, p in enumerate(points)),
+        key=lambda r: rot(r[0])
+    )
+    return extremum[-1]
 
-    return bottom_p, right_p, top_p, left_p
+
+def find_extr(points):
+    bottom_i = extremal_index(points, rot270)
+    right_i = extremal_index(points, rot180)
+    top_i = extremal_index(points, rot90)
+    left_i = extremal_index(points, rot0)
+    return [bottom_i, right_i, top_i, left_i]
 
 
 def triangle_area(point1, point2):
@@ -104,7 +100,7 @@ def rectangle_area(points, points_indexes, index_to_change):
 def find_min_area(points):
 
     bottom_p, right_p, top_p, left_p = find_extr(points)
-    start_points_indexes = [points.index(bottom_p), points.index(right_p), points.index(top_p), points.index(left_p)]
+    start_points_indexes = find_extr(points)
     all_areas = []
     index_to_change = get_angles(points, start_points_indexes)
     all_areas.append(rectangle_area(points, start_points_indexes, index_to_change))
