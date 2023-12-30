@@ -82,9 +82,9 @@ def cross(p1, p2):
     return y1 * x2 - x1 * y2
 
 
-def norm(v):
+def norm2(v):
     x, y = v
-    return (x * x + y * y) ** 0.5
+    return x * x + y * y
 
 
 def rectangle_area(points, indices, index_to_change):
@@ -96,13 +96,13 @@ def rectangle_area(points, indices, index_to_change):
     p_left = points[indices[3]]
     h_dir = sub(p_bottom, points[(indices[0] + 1) % len(points)])
 
-    height = cross(sub(p_bottom, p_top), h_dir) / norm(h_dir)
+    height = cross(sub(p_bottom, p_top), h_dir)
+    width = dot(sub(p_left, p_right), h_dir)
 
-    width = dot(sub(p_left, p_right), h_dir) / norm(h_dir)
+    numerator = height * width
+    denominator = norm2(h_dir)
 
-    rect_area = width * height
-
-    return rect_area
+    return numerator, denominator
 
 
 def find_min_area(points):
@@ -115,7 +115,17 @@ def find_min_area(points):
             yield area
             indices[index_to_change] = (indices[index_to_change] + 1) % len(points)
 
-    min_area = min(areas())
+    def cmp_(a, b):
+        na, da = a
+        nb, db = b
+        diff = na * db - nb * da
+        if diff < 0:
+            return -1
+        if diff > 0:
+            return 1
+        return 0
+
+    min_area = min(areas(), key=functools.cmp_to_key(cmp_))
     return min_area
 
 
@@ -124,8 +134,8 @@ def main():
         lines = f.read().split('\n')
     points = [ast.literal_eval(line) for line in lines]
 
-    min_rectangle_area = find_min_area(points)
-    print(min_rectangle_area)
+    n, d = find_min_area(points)
+    print(n / d)
 
 
 main()
