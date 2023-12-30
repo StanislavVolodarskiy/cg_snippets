@@ -32,10 +32,6 @@ def find_extr(points):
     return [extremal_index(points, rot) for rot in rots]
 
 
-def triangle_area(point1, point2):
-    return point2[0] * point1[1] - point1[0] * point2[1]
-
-
 def edge(points, index):
     x1, y1 = points[index]
     x2, y2 = points[(index + 1) % len(points)]
@@ -45,7 +41,7 @@ def edge(points, index):
 def get_angles(points, indices): #находим минимальный угол и получаем индекс, который необходимо изменить
 
     def cmp_(c1, c2):
-        a = triangle_area(c1[1], c2[1])
+        a = cross(c1[1], c2[1])
         if a < 0:
             return -1
         if a > 0:
