@@ -1,6 +1,5 @@
 import ast
 import functools
-import numpy as np
 
 
 def rot0(v):
@@ -63,20 +62,43 @@ def get_angles(points, indices): #находим минимальный угол
     return min(new_points, key=functools.cmp_to_key(cmp_))[2]
 
 
+def sub(p1, p2):
+    """ p2 - p1 """
+
+    x1, y1 = p1
+    x2, y2 = p2
+    return x2 - x1, y2 - y1
+
+
+def dot(p1, p2):
+    x1, y1 = p1
+    x2, y2 = p2
+    return x1 * x2 + y1 * y2
+
+
+def cross(p1, p2):
+    x1, y1 = p1
+    x2, y2 = p2
+    return y1 * x2 - x1 * y2
+
+
+def norm(v):
+    x, y = v
+    return (x * x + y * y) ** 0.5
+
+
 def rectangle_area(points, indices, index_to_change):
     indices = indices[index_to_change:] + indices[:index_to_change]
 
-    norm = np.linalg.norm
+    p_bottom = points[indices[0]]
+    p_right = points[indices[1]]
+    p_top = points[indices[2]]
+    p_left = points[indices[3]]
+    h_dir = sub(p_bottom, points[(indices[0] + 1) % len(points)])
 
-    p_bottom = np.array(points[indices[0]])
-    p_right = np.array(points[indices[1]])
-    p_top = np.array(points[indices[2]])
-    p_left = np.array(points[indices[3]])
-    h_dir = np.array(points[(indices[0] + 1) % len(points)]) - p_bottom
+    height = cross(sub(p_bottom, p_top), h_dir) / norm(h_dir)
 
-    height = norm(np.cross(p_top - p_bottom, h_dir)) / norm(h_dir)
-
-    width = np.dot(p_right - p_left, h_dir) / norm(h_dir)
+    width = dot(sub(p_left, p_right), h_dir) / norm(h_dir)
 
     rect_area = width * height
 
