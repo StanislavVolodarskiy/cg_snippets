@@ -46,11 +46,11 @@ def edge(points, index):
     return x2 - x1, y2 - y1
 
 
-def get_angles(points, points_indexes): #находим минимальный угол и получаем индекс, который необходимо изменить
+def get_angles(points, indices): #находим минимальный угол и получаем индекс, который необходимо изменить
 
     calipers = [
         rot(edge(points, index))
-        for rot, index in zip(rots, points_indexes)
+        for rot, index in zip(rots, indices)
     ]
     
     new_points = [(calipers[i][0], calipers[i][1], i) for i in range(4)]
@@ -66,16 +66,16 @@ def get_angles(points, points_indexes): #находим минимальный �
     return min_caliper[2]
 
 
-def rectangle_area(points, points_indexes, index_to_change):
-    points_indexes = points_indexes[index_to_change:] + points_indexes[:index_to_change]
+def rectangle_area(points, indices, index_to_change):
+    indices = indices[index_to_change:] + indices[:index_to_change]
 
     norm = np.linalg.norm
 
-    p_bottom = np.array(points[points_indexes[0]])
-    p_right = np.array(points[points_indexes[1]])
-    p_top = np.array(points[points_indexes[2]])
-    p_left = np.array(points[points_indexes[3]])
-    h_dir = np.array(points[(points_indexes[0] + 1) % len(points)]) - p_bottom
+    p_bottom = np.array(points[indices[0]])
+    p_right = np.array(points[indices[1]])
+    p_top = np.array(points[indices[2]])
+    p_left = np.array(points[indices[3]])
+    h_dir = np.array(points[(indices[0] + 1) % len(points)]) - p_bottom
 
     height = norm(np.cross(p_top - p_bottom, h_dir)) / norm(h_dir)
 
@@ -87,14 +87,14 @@ def rectangle_area(points, points_indexes, index_to_change):
 
 
 def find_min_area(points):
-    points_indexes = find_extr(points)
+    indices = find_extr(points)
 
     def areas():
         for _ in range(len(points)):
-            index_to_change = get_angles(points, points_indexes)
-            area = rectangle_area(points, points_indexes, index_to_change)
+            index_to_change = get_angles(points, indices)
+            area = rectangle_area(points, indices, index_to_change)
             yield area
-            points_indexes[index_to_change] = (points_indexes[index_to_change] + 1) % len(points)
+            indices[index_to_change] = (indices[index_to_change] + 1) % len(points)
 
     min_area = min(areas())
     return min_area
