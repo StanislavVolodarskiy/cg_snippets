@@ -27,49 +27,25 @@ def norm2(v):
     return x * x + y * y
 
 
-def rot0(v):
-    return v
-
-
-def rot90(v):
-    x, y = v
-    return -y, x
-
-
-def rot180(v):
-    x, y = v
-    return -x, -y
-
-
-def rot270(v):
-    x, y = v
-    return y, -x
-
-
-rots = rot0, rot270, rot180, rot90
+rots =                        \
+    lambda v:   v           , \
+    lambda v: ( v[1], -v[0]), \
+    lambda v: (-v[0], -v[1]), \
+    lambda v: (-v[1],  v[0])
 
 
 def extremal_index(points, rot):
     return min(enumerate(points), key=lambda r: rot(r[1]))[0]
 
 
-def find_extr(points):
-    return [extremal_index(points, rot) for rot in rots]
-
-
 def edge(points, index):
     return sub(points[index], points[(index + 1) % len(points)])
 
 
-def get_angles(points, indices): #находим минимальный угол и получаем индекс, который необходимо изменить
+def get_angles(points, indices):
 
     def cmp_(c1, c2):
-        a = cross(c1[1], c2[1])
-        if a < 0:
-            return -1
-        if a > 0:
-            return 1
-        return 0
+        return cross(c1[1], c2[1])
 
     calipers = [
         rot(edge(points, index))
@@ -81,19 +57,10 @@ def get_angles(points, indices): #находим минимальный угол
 
 
 def rectangle_area(points, indices):
-    p_bottom = points[indices[0]]
-    p_right = points[indices[1]]
-    p_top = points[indices[2]]
-    p_left = points[indices[3]]
     h_dir = edge(points, indices[0])
-
-    height = cross(sub(p_bottom, p_top), h_dir)
-    width = dot(sub(p_left, p_right), h_dir)
-
-    numerator = height * width
-    denominator = norm2(h_dir)
-
-    return numerator, denominator
+    height = cross(sub(points[indices[0]], points[indices[2]]), h_dir)
+    width  = dot  (sub(points[indices[3]], points[indices[1]]), h_dir)
+    return height * width, norm2(h_dir)
 
 
 def find_min_area(points):
@@ -101,28 +68,18 @@ def find_min_area(points):
     def areas(indices):
         for _ in range(len(points)):
             indices = get_angles(points, indices)
-            area = rectangle_area(points, indices)
-            yield area
+            yield rectangle_area(points, indices)
             indices[0] = (indices[0] + 1) % len(points)
 
     def cmp_(a, b):
         na, da = a
         nb, db = b
-        diff = na * db - nb * da
-        if diff < 0:
-            return -1
-        if diff > 0:
-            return 1
-        return 0
+        return na * db - nb * da
 
-    indices = find_extr(points)
-    min_area = min(areas(indices), key=functools.cmp_to_key(cmp_))
-    return min_area
+    return min(
+        areas([extremal_index(points, rot) for rot in rots]),
+        key=functools.cmp_to_key(cmp_)
+    )
 
 
-def main():
-    points = [tuple(map(int, line.split())) for line in sys.stdin]
-    print(*find_min_area(points))
-
-
-main()
+print(*find_min_area([tuple(map(int, line.split())) for line in sys.stdin]))
