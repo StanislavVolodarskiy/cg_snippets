@@ -33,9 +33,7 @@ def find_extr(points):
 
 
 def edge(points, index):
-    x1, y1 = points[index]
-    x2, y2 = points[(index + 1) % len(points)]
-    return x2 - x1, y2 - y1
+    return sub(points[index], points[(index + 1) % len(points)])
 
 
 def get_angles(points, indices): #находим минимальный угол и получаем индекс, который необходимо изменить
@@ -88,7 +86,7 @@ def rectangle_area(points, indices, index_to_change):
     p_right = points[indices[1]]
     p_top = points[indices[2]]
     p_left = points[indices[3]]
-    h_dir = sub(p_bottom, points[(indices[0] + 1) % len(points)])
+    h_dir = edge(points, indices[0])
 
     height = cross(sub(p_bottom, p_top), h_dir)
     width = dot(sub(p_left, p_right), h_dir)
