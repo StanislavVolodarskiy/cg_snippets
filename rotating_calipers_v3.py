@@ -1,5 +1,6 @@
 import ast
 import functools
+import sys
 
 
 def rot0(v):
@@ -122,12 +123,8 @@ def find_min_area(points):
 
 
 def main():
-    with open('polygon_points.txt', 'r') as f:
-        lines = f.read().split('\n')
-    points = [ast.literal_eval(line) for line in lines]
-
-    n, d = find_min_area(points)
-    print(n / d)
+    points = [ast.literal_eval(line) for line in sys.stdin]
+    print(*find_min_area(points))
 
 
 main()
