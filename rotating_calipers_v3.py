@@ -1,4 +1,5 @@
 import ast
+import functools
 import numpy as np
 
 
@@ -52,18 +53,13 @@ def get_angles(points, indices): #находим минимальный угол
         rot(edge(points, index))
         for rot, index in zip(rots, indices)
     ]
-    
+
     new_points = [(calipers[i][0], calipers[i][1], i) for i in range(4)]
 
     def less(c1, c2):
         return triangle_area(c1[:2], c2[:2]) < 0
-    
-    min_caliper = new_points[0]
-    for j in range(1,4):
-        if less(new_points[j], min_caliper):
-            min_caliper = new_points[j]
-    
-    return min_caliper[2]
+
+    return max(new_points, key=functools.cmp_to_key(less))[2]
 
 
 def rectangle_area(points, indices, index_to_change):
