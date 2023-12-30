@@ -37,10 +37,7 @@ def find_extr(points):
 
 
 def triangle_area(point1, point2):
-    
-    S = 1/2 * (point2[0]*point1[1] - point1[0]*point2[1])
-    
-    return S
+    return point2[0] * point1[1] - point1[0] * point2[1]
 
 
 def edge(points, index):
