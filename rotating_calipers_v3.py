@@ -3,11 +3,6 @@ import math
 import numpy as np
 
 
-with open('polygon_points.txt', 'r') as f:
-    lines = f.read().split('\n')
-points = [ast.literal_eval(line) for line in lines]
-
-
 def find_extr(points):
     bottom_min = min([ point[1] for point in points])
     points_filter = [point for point in points if point[1]==bottom_min]
@@ -43,7 +38,7 @@ def rotate_caliper(point1, point2, angle):
     return (new_x, new_y)
 
 
-def get_angles(points_indexes): #находим минимальный угол и получаем индекс, который необходимо изменить
+def get_angles(points, points_indexes): #находим минимальный угол и получаем индекс, который необходимо изменить
 
     bottom_caliper = points[(points_indexes[0]+1) % len(points)]
     right_caliper = rotate_caliper(points[points_indexes[1]], points[(points_indexes[1]+1) % len(points)], 3/2*math.pi)
@@ -66,13 +61,13 @@ def get_angles(points_indexes): #находим минимальный угол 
     return min_caliper[2]
     
 
-def change_indexes(points_indexes, index_to_change): #пересчет индексов
+def change_indexes(points, points_indexes, index_to_change): #пересчет индексов
     new_points_indexes = points_indexes.copy()
     new_points_indexes[index_to_change] = (new_points_indexes[index_to_change] + 1) % len(points)
     return new_points_indexes
 
 
-def rectangle_area(points_indexes, index_to_change):
+def rectangle_area(points, points_indexes, index_to_change):
     points_indexes = points_indexes[index_to_change:] + points_indexes[:index_to_change]
 
     norm = np.linalg.norm
@@ -97,20 +92,28 @@ def find_min_area(points):
     bottom_p, right_p, top_p, left_p = find_extr(points)
     start_points_indexes = [points.index(bottom_p), points.index(right_p), points.index(top_p), points.index(left_p)]
     all_areas = []
-    index_to_change = get_angles(start_points_indexes)
-    all_areas.append(rectangle_area(start_points_indexes, index_to_change))
-    points_indexes = change_indexes(start_points_indexes, index_to_change)  
+    index_to_change = get_angles(points, start_points_indexes)
+    all_areas.append(rectangle_area(points, start_points_indexes, index_to_change))
+    points_indexes = change_indexes(points, start_points_indexes, index_to_change)  
     
     for i in range(len(points)-1):
-        index_to_change = get_angles(points_indexes)
-        area = rectangle_area(points_indexes, index_to_change)
+        index_to_change = get_angles(points, points_indexes)
+        area = rectangle_area(points, points_indexes, index_to_change)
         all_areas.append(area)
-        points_indexes = change_indexes(points_indexes, index_to_change)
+        points_indexes = change_indexes(points, points_indexes, index_to_change)
             
         i+=1
     min_area = min(all_areas)
     return min_area
 
 
-min_rectangle_area = find_min_area(points)
-print(min_rectangle_area)
+def main():
+    with open('polygon_points.txt', 'r') as f:
+        lines = f.read().split('\n')
+    points = [ast.literal_eval(line) for line in lines]
+
+    min_rectangle_area = find_min_area(points)
+    print(min_rectangle_area)
+
+
+main()
