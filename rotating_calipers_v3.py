@@ -48,7 +48,7 @@ def rotate_caliper(point1, point2, angle):
     return (new_x, new_y)
 
 def get_angles(points_indexes): #находим минимальный угол и получаем индекс, который необходимо изменить
-    
+
     bottom_caliper = points[(points_indexes[0]+1) % len(points)]
     right_caliper = rotate_caliper(points[points_indexes[1]], points[(points_indexes[1]+1) % len(points)], 3/2*math.pi)
     top_caliper = rotate_caliper(points[points_indexes[2]], points[(points_indexes[2]+1) % len(points)], math.pi)
@@ -59,19 +59,15 @@ def get_angles(points_indexes): #находим минимальный угол 
     new_points = [(calipers[i][0] - points[points_indexes[i]][0], calipers[i][1] - points[points_indexes[i]][1], 
                    i) for i in range(4)]
 
-    areas = []
-    for i in range(4):
-        for j in range(1,4):
-            p1 = (new_points[i][0], new_points[i][1])
-            p2 = (new_points[j][0], new_points[j][1])
-            areas.append((triangle_area(p1, p2), new_points[i], new_points[j]))
-    areas.sort(key = lambda x: x[0])
+    def less(c1, c2):
+        return triangle_area(c1[:2], c2[:2]) < 0
     
-    min_ang = areas[0]
+    min_caliper = new_points[0]
+    for j in range(1,4):
+        if less(new_points[j], min_caliper):
+            min_caliper = new_points[j]
     
-    ind_to_change = min_ang[1][2]
-    
-    return ind_to_change
+    return min_caliper[2]
     
 
 # get_angles(start_points_indexes)
