@@ -2,6 +2,28 @@ import ast
 import numpy as np
 
 
+def rot0(v):
+    return v
+
+
+def rot90(v):
+    x, y = v
+    return -y, x
+
+
+def rot180(v):
+    x, y = v
+    return -x, -y
+
+
+def rot270(v):
+    x, y = v
+    return y, -x
+
+
+rots = rot0, rot270, rot180, rot90
+
+
 def extremal_index(points, rot):
     extremum = min(
         ((p, i) for i, p in enumerate(points)),
@@ -11,11 +33,7 @@ def extremal_index(points, rot):
 
 
 def find_extr(points):
-    bottom_i = extremal_index(points, rot270)
-    right_i = extremal_index(points, rot180)
-    top_i = extremal_index(points, rot90)
-    left_i = extremal_index(points, rot0)
-    return [bottom_i, right_i, top_i, left_i]
+    return [extremal_index(points, rot) for rot in rots]
 
 
 def triangle_area(point1, point2):
@@ -52,7 +70,6 @@ def rot270(v):
 
 def get_angles(points, points_indexes): #находим минимальный угол и получаем индекс, который необходимо изменить
 
-    rots = rot0, rot270, rot180, rot90
     calipers = [
         rot(edge(points, index))
         for rot, index in zip(rots, points_indexes)
@@ -99,7 +116,6 @@ def rectangle_area(points, points_indexes, index_to_change):
 
 def find_min_area(points):
 
-    bottom_p, right_p, top_p, left_p = find_extr(points)
     start_points_indexes = find_extr(points)
     all_areas = []
     index_to_change = get_angles(points, start_points_indexes)
