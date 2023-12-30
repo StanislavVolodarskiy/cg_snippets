@@ -1,12 +1,12 @@
-import numpy as np
-# import pandas as pd
-import math
 import ast
+import math
+import numpy as np
+
 
 with open('polygon_points.txt', 'r') as f:
     lines = f.read().split('\n')
 points = [ast.literal_eval(line) for line in lines]
-points
+
 
 def find_extr(points):
     bottom_min = min([ point[1] for point in points])
@@ -25,14 +25,8 @@ def find_extr(points):
     points_filter = [point for point in points if point[0]==left_min]
     left_p = sorted(points_filter, key = lambda x: x[1])[0]
 
-    
     return bottom_p, right_p, top_p, left_p
 
-bottom_p, right_p, top_p, left_p = find_extr(points)
-bottom_p, right_p, top_p, left_p #4 экстремальные точки
-
-start_points_indexes = [points.index(bottom_p), points.index(right_p), points.index(top_p), points.index(left_p)]
-start_points_indexes #стартовый набор точек калиперов
 
 def triangle_area(point1, point2):
     
@@ -40,12 +34,14 @@ def triangle_area(point1, point2):
     
     return S
 
+
 def rotate_caliper(point1, point2, angle):
 
     new_x = point1[0] + (point2[0] - point1[0])*math.cos(angle) - (point2[1] - point1[1])*math.sin(angle)
     new_y = point1[1] + (point2[0] - point1[0])*math.sin(angle) + (point2[1] - point1[1])*math.cos(angle)
 
     return (new_x, new_y)
+
 
 def get_angles(points_indexes): #находим минимальный угол и получаем индекс, который необходимо изменить
 
@@ -69,8 +65,6 @@ def get_angles(points_indexes): #находим минимальный угол 
     
     return min_caliper[2]
     
-
-# get_angles(start_points_indexes)
 
 def change_indexes(points_indexes, index_to_change): #пересчет индексов
     new_points_indexes = points_indexes.copy()
@@ -117,6 +111,6 @@ def find_min_area(points):
     min_area = min(all_areas)
     return min_area
 
-min_rectangle_area = find_min_area(points)
 
+min_rectangle_area = find_min_area(points)
 print(min_rectangle_area)
