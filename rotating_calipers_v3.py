@@ -3,6 +3,31 @@ import functools
 import sys
 
 
+def sub(p1, p2):
+    """ p2 - p1 """
+
+    x1, y1 = p1
+    x2, y2 = p2
+    return x2 - x1, y2 - y1
+
+
+def dot(p1, p2):
+    x1, y1 = p1
+    x2, y2 = p2
+    return x1 * x2 + y1 * y2
+
+
+def cross(p1, p2):
+    x1, y1 = p1
+    x2, y2 = p2
+    return y1 * x2 - x1 * y2
+
+
+def norm2(v):
+    x, y = v
+    return x * x + y * y
+
+
 def rot0(v):
     return v
 
@@ -53,31 +78,6 @@ def get_angles(points, indices): #находим минимальный угол
     ]
 
     return min(enumerate(calipers), key=functools.cmp_to_key(cmp_))[0]
-
-
-def sub(p1, p2):
-    """ p2 - p1 """
-
-    x1, y1 = p1
-    x2, y2 = p2
-    return x2 - x1, y2 - y1
-
-
-def dot(p1, p2):
-    x1, y1 = p1
-    x2, y2 = p2
-    return x1 * x2 + y1 * y2
-
-
-def cross(p1, p2):
-    x1, y1 = p1
-    x2, y2 = p2
-    return y1 * x2 - x1 * y2
-
-
-def norm2(v):
-    x, y = v
-    return x * x + y * y
 
 
 def rectangle_area(points, indices, index_to_change):
