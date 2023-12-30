@@ -44,22 +44,20 @@ def edge(points, index):
 
 def get_angles(points, indices): #находим минимальный угол и получаем индекс, который необходимо изменить
 
-    calipers = [
-        rot(edge(points, index))
-        for rot, index in zip(rots, indices)
-    ]
-
-    new_points = [(calipers[i][0], calipers[i][1], i) for i in range(4)]
-
     def cmp_(c1, c2):
-        a = triangle_area(c1[:2], c2[:2])
+        a = triangle_area(c1[1], c2[1])
         if a < 0:
             return -1
         if a > 0:
             return 1
         return 0
 
-    return min(new_points, key=functools.cmp_to_key(cmp_))[2]
+    calipers = [
+        rot(edge(points, index))
+        for rot, index in zip(rots, indices)
+    ]
+
+    return min(enumerate(calipers), key=functools.cmp_to_key(cmp_))[0]
 
 
 def sub(p1, p2):
